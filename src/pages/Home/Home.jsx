@@ -1,6 +1,5 @@
 
-import { useEffect, useRef } from "react"
-import { fetchAllLikes, fetchAllLikesTest } from "../../firebase/quirkyService"
+import { useEffect } from "react"
 import SkeletonCard from "../../ui/Skeleton"
 import { ALL_QUIRKIES } from "../../utils/quirkyIndex"
 import QuirkyCard from "./ui/QuirkyCard"
@@ -9,8 +8,12 @@ import { useQuirkiesStore } from "../../store/quirkyStore"
 const CARD_COUNT = 9
 
 export default function Home() {
-  
-  
+  const fetchLikes = useQuirkiesStore((s) => s.fetchLikes)
+
+  useEffect(() => {
+    fetchLikes()
+  }, [fetchLikes])
+
   return (
     <div className="max-w-7xl mx-auto px-6 py-12">
       {/* Hero */}
