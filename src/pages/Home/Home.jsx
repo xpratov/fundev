@@ -1,5 +1,5 @@
 
-import { useEffect } from "react"
+import { useEffect, useMemo } from "react"
 import SkeletonCard from "../../ui/Skeleton"
 import { ALL_QUIRKIES } from "../../utils/quirkyIndex"
 import QuirkyCard from "./ui/QuirkyCard"
@@ -9,10 +9,20 @@ const CARD_COUNT = 9
 
 export default function Home() {
   const fetchLikes = useQuirkiesStore((s) => s.fetchLikes)
+  const likes = useQuirkiesStore((s) => s.likes)
 
   useEffect(() => {
     fetchLikes()
   }, [fetchLikes])
+
+  const sortedQuirkies = useMemo(() => {
+    return ALL_QUIRKIES
+      .map((quirky, index) => ({ ...quirky, index }))
+      .sort((a, b) => {
+        const likesDiff = (likes[b.id] ?? 0) - (likes[a.id] ?? 0)
+        return likesDiff || a.index - b.index
+      })
+  }, [likes])
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-12">
@@ -26,11 +36,11 @@ export default function Home() {
         </p>
       </section>
 
-      {/* Skeleton grid */}
-      <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-        {ALL_QUIRKIES ?
-          ALL_QUIRKIES.map(({id, Component}) => (
-            <QuirkyCard id={id} key={id} >
+      {/* Quirky masonry */}
+      <section className="columns-1 sm:columns-2 md:columns-3 gap-4">
+        {sortedQuirkies ?
+          sortedQuirkies.map(({id, name, Component}, position) => (
+            <QuirkyCard id={id} key={id} position={position} name={name}>
               <Component key={id}/>
             </QuirkyCard>))
         : Array.from({ length: CARD_COUNT }).map((_, i) => (

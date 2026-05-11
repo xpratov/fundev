@@ -1,6 +1,4 @@
-import { useEffect, useRef } from "react"
 import { useQuirkiesStore } from "../../../store/quirkyStore"
-import { fetchAllLikes } from "../../../firebase/quirkyService"
 
 
 /**
@@ -9,29 +7,23 @@ import { fetchAllLikes } from "../../../firebase/quirkyService"
  *   id       — "quirky1" kabi, Firestore doc id si bilan mos kelishi kerak
  *   children — quirkyning o'zi
  */
-export default function QuirkyCard({ id, children }) {
+export default function QuirkyCard({ id, position = 0, children, name }) {
   const likes  = useQuirkiesStore((s) => s.likes[id] ?? 0)
   const liked  = useQuirkiesStore((s) => !!s.liked[id])
   const toggle = useQuirkiesStore((s) => s.toggleLike)
-  const hasFetched = useRef(false)
-
-  useEffect(() => {
-    if (hasFetched.current) return
-    hasFetched.current = true
-    
-  }, [])
+  const borderColor = position % 2 === 0 ? 'border-[#ff2d6b]' : 'border-[#00e5c8]'
 
   return (
-    <div className="group relative border border-[#1e2640] bg-[#131829] rounded-sm overflow-hidden transition-all duration-300 hover:border-[#2a3555]">
+    <div className={`group relative mb-4 break-inside-avoid border-5 ${borderColor} bg-[#131829] rounded-2xl overflow-hidden transition-all duration-300`}>
       {/* Content */}
-      <div className="p-5">
+      <div className="p-0 [&>*]:!rounded-xl">
         {children}
       </div>
 
       {/* Like bar */}
       <div className="flex items-center justify-between px-5 py-3 border-t border-[#1e2640]">
-        <span className="font-mono text-[9px] tracking-[0.2em] text-[#3d4a6b]">
-          {id}
+        <span className="font-mono text-[16px] tracking-[0.2em] text-[#3d4a6b]">
+          {name}
         </span>
 
         <button
